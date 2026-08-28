@@ -1,0 +1,11 @@
+IndicClaimVer/
+│
+├── train.py
+├── requirements.txt
+├── dataset/
+│   ├── train_subtask1.json
+│   ├── dev_subtask1.json
+│   ├── dev_subtask2.json
+│   └── evidence_pool.json
+│
+└── saved_model/
