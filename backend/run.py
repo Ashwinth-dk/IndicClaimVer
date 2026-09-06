@@ -1,0 +1,15 @@
+import os
+import sys
+from pathlib import Path
+import uvicorn
+
+# Ensure the backend directory is on sys.path
+backend_dir = Path(__file__).resolve().parent
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
+
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", "8000"))
+    host = os.getenv("HOST", "0.0.0.0")
+    print(f"Starting IndicClaimVer API server on http://localhost:{port} ...")
+    uvicorn.run("app.main:app", host=host, port=port, reload=True)

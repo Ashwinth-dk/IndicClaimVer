@@ -1,75 +1,84 @@
-# Byte-compiled / optimized / DLL files
+# ====================================
+# Python & Environment
+# ====================================
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
-
-# Distribution / packaging
 .Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual Environments
-.python311/
-.env
-.venv
 env/
 venv/
+.venv/
 ENV/
 env.bak/
 venv.bak/
 
-# Retriever & Index Caches
-retriever_cache/
-*.joblib
-*.pkl
-*.pickle
-
-# Large Model Weights (>100MB / GitHub limits)
+# ====================================
+# Model Weights, Binary & Cache Files
+# ====================================
+# Large neural model weight files (>100MB)
 *.safetensors
 *.bin
 *.pt
 *.pth
 *.onnx
-*.ckpt
-saved_model/model.safetensors
-saved_model/*.bin
 
-# Evaluation & Generated Reports
-dataset/test_evaluation_report.json
+# Generated vector embeddings cache
+*.npz
+backend/data/evidence_embeddings.npz
 
-# Logs & Databases
+# HuggingFace & Cache directories
+.cache/
+hf_hub/
+
+# ====================================
+# Node & Frontend
+# ====================================
+frontend/node_modules/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Frontend production builds & vite cache
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+dist/
+
+# ====================================
+# Logs & Testing
+# ====================================
 *.log
-*.sqlite3
+.pytest_cache/
+.coverage
+htmlcov/
+.nox/
 
-# IDE & Editor Files
+# ====================================
+# Environment & Secrets
+# ====================================
+.env
+.env.local
+.env.*.local
+*.env
+
+# ====================================
+# IDEs & System Files
+# ====================================
 .vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
-*.swp
-*.swo
-*~
-.agents/
-.gemini/
+*.sublime-project
+*.sublime-workspace
 
-# Operating System Files
+# OS files
 .DS_Store
 Thumbs.db
 desktop.ini
-$RECYCLE.BIN/
+
+# Antigravity / Agent runtime artifacts
+.gemini/
+.agents/
