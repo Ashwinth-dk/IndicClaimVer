@@ -1,0 +1,342 @@
+[
+  {
+    "source_id": "SRC_EN_PIB_01",
+    "source_name": "Press Information Bureau (PIB) English",
+    "base_url": "https://pib.gov.in",
+    "language": "en",
+    "source_type": "government",
+    "enabled": true,
+    "reliability_score": 0.98,
+    "description": "Nodal agency of the Government of India for press releases and official policy statements (English)"
+  },
+  {
+    "source_id": "SRC_TA_PIB_02",
+    "source_name": "Press Information Bureau (PIB) Tamil",
+    "base_url": "https://pib.gov.in/tamil",
+    "language": "ta",
+    "source_type": "government",
+    "enabled": true,
+    "reliability_score": 0.98,
+    "description": "Official Government of India press releases in Tamil"
+  },
+  {
+    "source_id": "SRC_HI_PIB_03",
+    "source_name": "Press Information Bureau (PIB) Hindi",
+    "base_url": "https://pib.gov.in/hindi",
+    "language": "hi",
+    "source_type": "government",
+    "enabled": true,
+    "reliability_score": 0.98,
+    "description": "Official Government of India press releases in Hindi"
+  },
+  {
+    "source_id": "SRC_MR_PIB_04",
+    "source_name": "Press Information Bureau (PIB) Marathi",
+    "base_url": "https://pib.gov.in/marathi",
+    "language": "mr",
+    "source_type": "government",
+    "enabled": true,
+    "reliability_score": 0.98,
+    "description": "Official Government of India press releases in Marathi"
+  },
+  {
+    "source_id": "SRC_EN_PRS_05",
+    "source_name": "PRS Legislative Research",
+    "base_url": "https://prsindia.org",
+    "language": "en",
+    "source_type": "government",
+    "enabled": true,
+    "reliability_score": 0.96,
+    "description": "Independent research tracking Indian Parliamentary bills, policy reforms, and state assembly laws"
+  },
+  {
+    "source_id": "SRC_EN_MOHFW_06",
+    "source_name": "Ministry of Health and Family Welfare",
+    "base_url": "https://mohfw.gov.in",
+    "language": "en",
+    "source_type": "government",
+    "enabled": true,
+    "reliability_score": 0.98,
+    "description": "Official apex health authority for public health data, COVID-19, and medical advisories"
+  },
+  {
+    "source_id": "SRC_EN_BOOM_07",
+    "source_name": "BOOM Live Fact Check (English)",
+    "base_url": "https://www.boomlive.in",
+    "language": "en",
+    "source_type": "fact_check",
+    "enabled": true,
+    "reliability_score": 0.94,
+    "description": "IFCN-certified fact-checking initiative tracking social media hoaxes and claims (English)"
+  },
+  {
+    "source_id": "SRC_HI_BOOM_08",
+    "source_name": "BOOM Live Fact Check (Hindi)",
+    "base_url": "https://hindi.boomlive.in",
+    "language": "hi",
+    "source_type": "fact_check",
+    "enabled": true,
+    "reliability_score": 0.94,
+    "description": "IFCN-certified fact-checking initiative tracking social media hoaxes and claims (Hindi)"
+  },
+  {
+    "source_id": "SRC_TA_FACTLY_09",
+    "source_name": "Factly Fact Check (Tamil)",
+    "base_url": "https://factly.in/category/tamil",
+    "language": "ta",
+    "source_type": "fact_check",
+    "enabled": true,
+    "reliability_score": 0.94,
+    "description": "IFCN verified fact-checking and public policy verification portal (Tamil)"
+  },
+  {
+    "source_id": "SRC_HI_FACTLY_10",
+    "source_name": "Factly Fact Check (Hindi)",
+    "base_url": "https://hindi.factly.in",
+    "language": "hi",
+    "source_type": "fact_check",
+    "enabled": true,
+    "reliability_score": 0.94,
+    "description": "IFCN verified fact-checking and public policy verification portal (Hindi)"
+  },
+  {
+    "source_id": "SRC_MR_FACTLY_11",
+    "source_name": "Factly Fact Check (Marathi)",
+    "base_url": "https://factly.in/category/marathi",
+    "language": "mr",
+    "source_type": "fact_check",
+    "enabled": true,
+    "reliability_score": 0.94,
+    "description": "IFCN verified fact-checking and public policy verification portal (Marathi)"
+  },
+  {
+    "source_id": "SRC_EN_ALTNEWS_12",
+    "source_name": "Alt News (English)",
+    "base_url": "https://www.altnews.in",
+    "language": "en",
+    "source_type": "fact_check",
+    "enabled": true,
+    "reliability_score": 0.94,
+    "description": "Dedicated fact-checking organization combating misinformation (English)"
+  },
+  {
+    "source_id": "SRC_HI_ALTNEWS_13",
+    "source_name": "Alt News (Hindi)",
+    "base_url": "https://www.altnews.in/hindi",
+    "language": "hi",
+    "source_type": "fact_check",
+    "enabled": true,
+    "reliability_score": 0.94,
+    "description": "Dedicated fact-checking organization combating misinformation (Hindi)"
+  },
+  {
+    "source_id": "SRC_TA_NEWSCHECKER_14",
+    "source_name": "Newschecker Tamil",
+    "base_url": "https://newschecker.in/ta",
+    "language": "ta",
+    "source_type": "fact_check",
+    "enabled": true,
+    "reliability_score": 0.93,
+    "description": "IFCN-certified fact-checking platform verifying claims in Tamil"
+  },
+  {
+    "source_id": "SRC_HI_NEWSCHECKER_15",
+    "source_name": "Newschecker Hindi",
+    "base_url": "https://newschecker.in/hi",
+    "language": "hi",
+    "source_type": "fact_check",
+    "enabled": true,
+    "reliability_score": 0.93,
+    "description": "IFCN-certified fact-checking platform verifying claims in Hindi"
+  },
+  {
+    "source_id": "SRC_MR_NEWSCHECKER_16",
+    "source_name": "Newschecker Marathi",
+    "base_url": "https://newschecker.in/mr",
+    "language": "mr",
+    "source_type": "fact_check",
+    "enabled": true,
+    "reliability_score": 0.93,
+    "description": "IFCN-certified fact-checking platform verifying claims in Marathi"
+  },
+  {
+    "source_id": "SRC_HI_VISHWAS_17",
+    "source_name": "Vishwas News (Hindi)",
+    "base_url": "https://www.vishwasnews.com",
+    "language": "hi",
+    "source_type": "fact_check",
+    "enabled": true,
+    "reliability_score": 0.94,
+    "description": "Dedicated IFCN verified Hindi fact-checking portal"
+  },
+  {
+    "source_id": "SRC_EN_TH_18",
+    "source_name": "The Hindu",
+    "base_url": "https://www.thehindu.com",
+    "language": "en",
+    "source_type": "news",
+    "enabled": true,
+    "reliability_score": 0.96,
+    "description": "National English daily covering Indian policy, courts, and politics"
+  },
+  {
+    "source_id": "SRC_TA_DINAMALAR_19",
+    "source_name": "Dinamalar (Tamil)",
+    "base_url": "https://www.dinamalar.com",
+    "language": "ta",
+    "source_type": "news",
+    "enabled": true,
+    "reliability_score": 0.93,
+    "description": "Leading Tamil newspaper covering state and national current affairs"
+  },
+  {
+    "source_id": "SRC_TA_DINAKARAN_20",
+    "source_name": "Dinakaran (Tamil)",
+    "base_url": "https://www.dinakaran.com",
+    "language": "ta",
+    "source_type": "news",
+    "enabled": true,
+    "reliability_score": 0.92,
+    "description": "Major Tamil daily newspaper covering government news and regional events"
+  },
+  {
+    "source_id": "SRC_TA_BBC_21",
+    "source_name": "BBC News Tamil",
+    "base_url": "https://www.bbc.com/tamil",
+    "language": "ta",
+    "source_type": "news",
+    "enabled": true,
+    "reliability_score": 0.96,
+    "description": "BBC News Tamil reporting on Indian national and international events"
+  },
+  {
+    "source_id": "SRC_HI_AMARUJALA_22",
+    "source_name": "Amar Ujala (Hindi)",
+    "base_url": "https://www.amarujala.com",
+    "language": "hi",
+    "source_type": "news",
+    "enabled": true,
+    "reliability_score": 0.93,
+    "description": "Leading Hindi newspaper covering national politics, policy, and state events"
+  },
+  {
+    "source_id": "SRC_HI_BHASKAR_23",
+    "source_name": "Dainik Bhaskar (Hindi)",
+    "base_url": "https://www.bhaskar.com",
+    "language": "hi",
+    "source_type": "news",
+    "enabled": true,
+    "reliability_score": 0.93,
+    "description": "Largest circulation Hindi daily with nationwide reporting"
+  },
+  {
+    "source_id": "SRC_HI_BBC_24",
+    "source_name": "BBC News Hindi",
+    "base_url": "https://www.bbc.com/hindi",
+    "language": "hi",
+    "source_type": "news",
+    "enabled": true,
+    "reliability_score": 0.96,
+    "description": "BBC News Hindi reporting on Indian national affairs and governance"
+  },
+  {
+    "source_id": "SRC_MR_LOKSATTA_25",
+    "source_name": "Loksatta (Marathi)",
+    "base_url": "https://www.loksatta.com",
+    "language": "mr",
+    "source_type": "news",
+    "enabled": true,
+    "reliability_score": 0.94,
+    "description": "Prestigious Marathi daily of the Indian Express Group covering policy and state affairs"
+  },
+  {
+    "source_id": "SRC_MR_MAHATIMES_26",
+    "source_name": "Maharashtra Times (Marathi)",
+    "base_url": "https://maharashtratimes.com",
+    "language": "mr",
+    "source_type": "news",
+    "enabled": true,
+    "reliability_score": 0.93,
+    "description": "Leading Marathi newspaper of the Times Group"
+  },
+  {
+    "source_id": "SRC_MR_SAKAL_27",
+    "source_name": "Sakal (Marathi)",
+    "base_url": "https://www.esakal.com",
+    "language": "mr",
+    "source_type": "news",
+    "enabled": true,
+    "reliability_score": 0.93,
+    "description": "Prominent Marathi daily covering governance and public interest issues"
+  },
+  {
+    "source_id": "SRC_MR_BBC_28",
+    "source_name": "BBC News Marathi",
+    "base_url": "https://www.bbc.com/marathi",
+    "language": "mr",
+    "source_type": "news",
+    "enabled": true,
+    "reliability_score": 0.96,
+    "description": "BBC News Marathi coverage of national, state, and global affairs"
+  },
+  {
+    "source_id": "SRC_EN_LIVELAW_29",
+    "source_name": "LiveLaw Legal Portal",
+    "base_url": "https://www.livelaw.in",
+    "language": "en",
+    "source_type": "legal",
+    "enabled": true,
+    "reliability_score": 0.95,
+    "description": "Leading Indian legal news portal covering Supreme Court and High Court judgments"
+  },
+  {
+    "source_id": "SRC_HI_LIVELAW_30",
+    "source_name": "LiveLaw Hindi",
+    "base_url": "https://hindi.livelaw.in",
+    "language": "hi",
+    "source_type": "legal",
+    "enabled": true,
+    "reliability_score": 0.95,
+    "description": "Indian legal journalism and court verdict reporting in Hindi"
+  },
+  {
+    "source_id": "SRC_EN_WIKI_31",
+    "source_name": "Wikipedia English",
+    "base_url": "https://en.wikipedia.org",
+    "language": "en",
+    "source_type": "research",
+    "enabled": true,
+    "reliability_score": 0.92,
+    "description": "Encyclopedia summaries in English"
+  },
+  {
+    "source_id": "SRC_TA_WIKI_32",
+    "source_name": "Wikipedia Tamil",
+    "base_url": "https://ta.wikipedia.org",
+    "language": "ta",
+    "source_type": "research",
+    "enabled": true,
+    "reliability_score": 0.92,
+    "description": "Encyclopedia summaries in Tamil"
+  },
+  {
+    "source_id": "SRC_HI_WIKI_33",
+    "source_name": "Wikipedia Hindi",
+    "base_url": "https://hi.wikipedia.org",
+    "language": "hi",
+    "source_type": "research",
+    "enabled": true,
+    "reliability_score": 0.92,
+    "description": "Encyclopedia summaries in Hindi"
+  },
+  {
+    "source_id": "SRC_MR_WIKI_34",
+    "source_name": "Wikipedia Marathi",
+    "base_url": "https://mr.wikipedia.org",
+    "language": "mr",
+    "source_type": "research",
+    "enabled": true,
+    "reliability_score": 0.92,
+    "description": "Encyclopedia summaries in Marathi"
+  }
+]

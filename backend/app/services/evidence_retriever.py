@@ -60,7 +60,7 @@ class EvidenceRetriever:
         return self.evidence_data
 
     def build_index(self, force_recompute: bool = False):
-        """Loads embedding model, builds or loads cached embeddings."""
+        """Loads embedding model, builds or incrementally updates cached embeddings."""
         if not self.evidence_data:
             self.load_evidence()
 
@@ -68,24 +68,46 @@ class EvidenceRetriever:
         self.model = SentenceTransformer(self.model_name, device=self.device)
 
         # Check for valid cache
-        cache_valid = False
-        if not force_recompute and self.cache_path.exists():
+        cached_valid = False
+        cached_embs = None
+        cached_ids = None
+
+        if self.cache_path.exists():
             try:
                 logger.info(f"Loading precomputed evidence embeddings from cache: {self.cache_path}")
                 cached = np.load(self.cache_path, allow_pickle=True)
-                cached_embs = cached["embeddings"]
-                cached_ids = cached["ids"]
-                if len(cached_embs) == len(self.evidence_data):
-                    self.embeddings = cached_embs.astype(np.float32)
-                    cache_valid = True
-                    logger.info("Cached embeddings loaded and verified successfully.")
-                else:
-                    logger.warning("Cache size mismatch. Recomputing embeddings...")
-            except Exception as e:
-                logger.warning(f"Failed to read cache ({e}). Recomputing embeddings...")
+                cached_embs = cached["embeddings"].astype(np.float32)
+                cached_ids = list(cached["ids"])
 
-        if not cache_valid:
-            logger.info(f"Encoding {len(self.evidence_data)} evidence passages (this runs once and is cached)...")
+                if not force_recompute and len(cached_embs) == len(self.evidence_data):
+                    self.embeddings = cached_embs
+                    cached_valid = True
+                    logger.info("Cached embeddings loaded and verified successfully.")
+                elif not force_recompute and len(cached_embs) > 0 and len(cached_embs) < len(self.evidence_data):
+                    # Incremental update: encode only new passages
+                    num_cached = len(cached_embs)
+                    new_items = self.evidence_data[num_cached:]
+                    logger.info(f"Incrementally encoding {len(new_items)} new evidence passages...")
+                    new_texts = [item["text"] for item in new_items]
+                    new_embs = self.model.encode(
+                        new_texts,
+                        batch_size=32,
+                        show_progress_bar=False,
+                        normalize_embeddings=True,
+                        device=self.device,
+                    )
+                    self.embeddings = np.vstack([cached_embs, np.array(new_embs, dtype=np.float32)])
+                    cached_valid = True
+                    
+                    # Save updated cache
+                    ids = np.array([item["id"] for item in self.evidence_data])
+                    np.savez_compressed(self.cache_path, embeddings=self.embeddings, ids=ids)
+                    logger.info(f"Saved updated incremental embeddings ({len(self.embeddings)} items) to {self.cache_path}")
+            except Exception as e:
+                logger.warning(f"Could not read/update cache incrementally ({e}). Recomputing...")
+
+        if not cached_valid:
+            logger.info(f"Encoding {len(self.evidence_data)} evidence passages...")
             texts = [item["text"] for item in self.evidence_data]
             embs = self.model.encode(
                 texts,

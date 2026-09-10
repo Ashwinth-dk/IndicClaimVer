@@ -1,8 +1,10 @@
 import logging
-from typing import Dict, Any, List
+import unicodedata
+from typing import Dict, Any, List, Optional
 
 from app.config import TOP_K, INITIAL_RETRIEVAL_K, MIN_RELEVANCE_THRESHOLD
 from app.utils.preprocessing import preprocess_claim
+from app.utils.language_detector import LanguageDetector
 from app.services.evidence_retriever import EvidenceRetriever
 from app.services.evidence_ranker import EvidenceRanker
 from app.services.claim_verifier import ClaimVerifier
@@ -12,12 +14,12 @@ logger = logging.getLogger(__name__)
 
 class VerificationPipeline:
     """
-    End-to-end Claim Verification Pipeline coordinating:
-    1. Claim Preprocessing
-    2. Semantic Evidence Retrieval (Top-20)
-    3. Evidence Ranking & Filtering (Top-5)
+    End-to-end Multilingual Claim Verification Pipeline coordinating:
+    1. Multilingual Claim Preprocessing & Language Detection (EN, TA, HI, MR)
+    2. Semantic Evidence Retrieval (Top-20 via multilingual sentence transformer)
+    3. Evidence Ranking & Relevance Filtering (Top-5)
     4. Fine-Tuned MuRIL Sequence Pair Classification
-    5. Weighted Relevance-Aware Aggregation & Verdict Formulation
+    5. Weighted Relevance-Aware Aggregation & Localized Verdict Formulation
     """
 
     def __init__(
@@ -36,42 +38,55 @@ class VerificationPipeline:
         verdict: str,
         confidence: float,
         evidence_items: List[Dict[str, Any]],
+        language: str = "en"
     ) -> str:
-        """Generates a natural, conversational research assistant summary."""
+        """Generates a natural summary adapted for the detected language."""
         count = len(evidence_items)
-        if verdict == "INSUFFICIENT_EVIDENCE" or count == 0:
-            return (
-                "Insufficient relevant evidence was discovered in the current evidence pool to verify this claim with high certainty. "
-                "Please consider refining or broadening the factual statement."
-            )
-
         conf_pct = int(round(confidence * 100))
-        verdict_lower = verdict.lower()
-        
-        # Count supporting and refuting passages
+
+        if verdict == "INSUFFICIENT_EVIDENCE" or count == 0:
+            if language == "ta":
+                return "இந்த கூற்றை சரிபார்க்க போதுமான ஆதாரங்கள் கிடைக்கவில்லை. தயவுசெய்து கூற்றை சற்று விரிவாக குறிப்பிடவும்."
+            elif language == "hi":
+                return "इस दावे को सत्यापित करने के लिए पर्याप्त प्रासंगिक साक्ष्य नहीं मिले। कृपया दावे को अधिक स्पष्ट रूप से प्रस्तुत करें।"
+            elif language == "mr":
+                return "या दाव्याची पडताळणी करण्यासाठी पुरेसे पुरावे उपलब्ध नाहीत. कृपया दाव्यात अधिक माहिती द्या."
+            else:
+                return (
+                    "Insufficient relevant evidence was discovered in the current evidence pool to verify this claim with high certainty. "
+                    "Please consider refining or broadening the factual statement."
+                )
+
         num_supports = sum(1 for e in evidence_items if e["prediction"] == "SUPPORTS")
         num_refutes = sum(1 for e in evidence_items if e["prediction"] == "REFUTES")
-
         top_evidence = evidence_items[0]
         top_conf_pct = int(round(top_evidence["confidence"] * 100))
 
-        if verdict == "SUPPORTS":
-            text = (
-                f"Based on the retrieved evidence, the claim is **supported** with **{conf_pct}% confidence**. "
-                f"The system evaluated {count} relevant evidence passages ({num_supports} supporting, {num_refutes} refuting). "
-                f"The highest-ranked passage (ID: {top_evidence['id']}) affirms the claim with {top_conf_pct}% verification certainty."
-            )
+        if language == "ta":
+            action = "உறுதிப்படுத்தப்பட்டுள்ளது (ஆதரிக்கப்படுகிறது)" if verdict == "SUPPORTS" else "மறுக்கப்பட்டுள்ளது (பொய்யானது)"
+            return f"ஆதாரங்களின் அடிப்படையில், இந்த கூற்று **{action}** ({conf_pct}% உறுதித்தன்மை). கணினி {count} ஆதாரங்களை மதிப்பாய்வு செய்தது ({num_supports} ஆதரவு, {num_refutes} மறுப்பு)."
+        elif language == "hi":
+            action = "समर्थित है (सही)" if verdict == "SUPPORTS" else "खंडित है (गलत)"
+            return f"उपलब्ध साक्ष्यों के आधार पर, यह दावा **{action}** ({conf_pct}% विश्वसनीयता). प्रणाली ने {count} साक्ष्यों का मूल्यांकन किया ({num_supports} समर्थन, {num_refutes} खंडन)."
+        elif language == "mr":
+            action = "पुष्टी झाली आहे (सत्य)" if verdict == "SUPPORTS" else "फेटाळण्यात आला आहे (असत्य)"
+            return f"उपलब्ध पुराव्यांच्या आधारे, हा दावा **{action}** ({conf_pct}% खात्री). प्रणालीने {count} पुराव्यांची तपासणी केली ({num_supports} समर्थन, {num_refutes} नकार)."
         else:
-            text = (
-                f"Based on the retrieved evidence, the claim is **refuted** with **{conf_pct}% confidence**. "
-                f"The system evaluated {count} relevant evidence passages ({num_refutes} refuting, {num_supports} supporting). "
-                f"The highest-ranked passage (ID: {top_evidence['id']}) contradicts the claim with {top_conf_pct}% verification certainty."
-            )
+            if verdict == "SUPPORTS":
+                return (
+                    f"Based on the retrieved evidence, the claim is **supported** with **{conf_pct}% confidence**. "
+                    f"The system evaluated {count} relevant evidence passages ({num_supports} supporting, {num_refutes} refuting). "
+                    f"The highest-ranked passage (ID: {top_evidence['id']}) affirms the claim with {top_conf_pct}% certainty."
+                )
+            else:
+                return (
+                    f"Based on the retrieved evidence, the claim is **refuted** with **{conf_pct}% confidence**. "
+                    f"The system evaluated {count} relevant evidence passages ({num_refutes} refuting, {num_supports} supporting). "
+                    f"The highest-ranked passage (ID: {top_evidence['id']}) contradicts the claim with {top_conf_pct}% certainty."
+                )
 
-        return text
-
-    def run(self, raw_claim: str) -> VerificationResponse:
-        """Executes the full pipeline for a given user claim."""
+    def run(self, raw_claim: str, expected_language: Optional[str] = None) -> VerificationResponse:
+        """Executes the full multilingual pipeline for a given user claim."""
         cleaned_claim = preprocess_claim(raw_claim)
         if not cleaned_claim:
             return VerificationResponse(
@@ -81,6 +96,7 @@ class VerificationPipeline:
                 supports_score=0.0,
                 refutes_score=0.0,
                 summary="The submitted claim is empty or contains no readable text.",
+                language="en",
                 evidence=[],
                 processing=ProcessingStatus(
                     claim_analysis="completed",
@@ -90,7 +106,12 @@ class VerificationPipeline:
                 ),
             )
 
-        # Step 1: Initial Retrieval (Top 20 candidates)
+        # Detect language
+        lang_res = LanguageDetector.detect_language(cleaned_claim)
+        detected_lang = lang_res["language"] if lang_res["language"] != "und" else (expected_language or "en")
+        lang_conf = lang_res["confidence"]
+
+        # Step 1: Initial Retrieval (Top 20 candidates from multilingual evidence pool)
         candidates = self.retriever.retrieve(cleaned_claim, top_k=INITIAL_RETRIEVAL_K)
 
         # Step 2: Ranking (Select Top-K relevant candidates)
@@ -100,14 +121,16 @@ class VerificationPipeline:
         if not ranked_evidence or (
             ranked_evidence[0].get("similarity_score", 0.0) < MIN_RELEVANCE_THRESHOLD
         ):
-            logger.info(f"Insufficient relevant evidence for claim: '{cleaned_claim}'")
+            logger.info(f"Insufficient relevant evidence for claim: '{cleaned_claim}' ({detected_lang})")
             return VerificationResponse(
                 claim=cleaned_claim,
                 verdict="INSUFFICIENT_EVIDENCE",
                 confidence=0.0,
                 supports_score=0.0,
                 refutes_score=0.0,
-                summary="Insufficient relevant evidence found in the database for reliable verification.",
+                summary=self.generate_summary(cleaned_claim, "INSUFFICIENT_EVIDENCE", 0.0, [], language=detected_lang),
+                language=detected_lang,
+                language_confidence=lang_conf,
                 evidence=[
                     EvidenceItem(
                         rank=item["rank"],
@@ -135,7 +158,6 @@ class VerificationPipeline:
             )
 
             retrieval_score = float(item.get("similarity_score", 0.5))
-            # Weight is scaled by retrieval similarity score (with minimum floor to avoid zero division)
             weight = max(0.05, retrieval_score)
             total_weight += weight
 
@@ -172,7 +194,13 @@ class VerificationPipeline:
             verdict=final_verdict,
             confidence=final_confidence,
             evidence_items=evidence_results,
+            language=detected_lang
         )
+
+        active_version = "baseline"
+        if hasattr(self.verifier, "model_path") and self.verifier.model_path:
+            v_name = self.verifier.model_path.name
+            active_version = v_name.replace("muril_claim_verification_model_", "") if "muril_claim_verification_model_" in v_name else "baseline"
 
         return VerificationResponse(
             claim=cleaned_claim,
@@ -181,6 +209,9 @@ class VerificationPipeline:
             supports_score=round(overall_supports, 4),
             refutes_score=round(overall_refutes, 4),
             summary=summary,
+            language=detected_lang,
+            language_confidence=lang_conf,
+            model_version=active_version,
             evidence=[
                 EvidenceItem(
                     rank=e["rank"],

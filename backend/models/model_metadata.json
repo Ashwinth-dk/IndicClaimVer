@@ -1,0 +1,16 @@
+{
+  "active_version": "baseline",
+  "model_path": "muril_claim_verification_model",
+  "trained_at": null,
+  "dataset_size": 0,
+  "train_size": 0,
+  "validation_size": 0,
+  "test_size": 0,
+  "supports_count": 0,
+  "refutes_count": 0,
+  "metrics": {},
+  "new_examples_since_last_training": 212,
+  "auto_train_enabled": false,
+  "min_new_examples_for_retrain": 10,
+  "history": []
+}

@@ -54,18 +54,35 @@ class ClaimVerifier:
             except Exception as e:
                 logger.warning(f"Failed to load label mapping from {self.label_mapping_path}: {e}")
 
-    def load_model(self):
+    def _resolve_active_model_path(self) -> Path:
+        """Checks model_metadata.json to resolve the latest active model directory."""
+        from app.config import MODEL_METADATA_PATH, MODELS_DIR
+        if MODEL_METADATA_PATH.exists():
+            try:
+                with open(MODEL_METADATA_PATH, "r", encoding="utf-8") as f:
+                    meta = json.load(f)
+                    rel_path = meta.get("model_path")
+                    if rel_path:
+                        candidate = MODELS_DIR / rel_path
+                        if candidate.exists():
+                            return candidate
+            except Exception as e:
+                logger.warning(f"Could not parse active model metadata: {e}")
+        return self.model_path
+
+    def load_model(self, custom_path: Optional[Path] = None):
         """Loads the fine-tuned MuRIL model and tokenizer once into memory."""
-        logger.info(f"Loading MuRIL claim verification model from {self.model_path}...")
+        target_path = Path(custom_path) if custom_path else self._resolve_active_model_path()
+        logger.info(f"Loading MuRIL claim verification model from {target_path}...")
         
         # Load Tokenizer
         try:
             from transformers import BertTokenizerFast
-            self.tokenizer = BertTokenizerFast.from_pretrained(str(self.model_path), use_fast=True)
+            self.tokenizer = BertTokenizerFast.from_pretrained(str(target_path), use_fast=True)
             logger.info("BertTokenizerFast loaded directly from local model directory.")
         except Exception as e:
             try:
-                self.tokenizer = AutoTokenizer.from_pretrained(str(self.model_path), use_fast=True)
+                self.tokenizer = AutoTokenizer.from_pretrained(str(target_path), use_fast=True)
                 logger.info("AutoTokenizer loaded from local model directory.")
             except Exception as e2:
                 logger.warning(f"Could not load local tokenizer ({e2}), loading '{MURIL_BASE_NAME}'...")
@@ -73,25 +90,42 @@ class ClaimVerifier:
 
         # Load Sequence Classification Model
         self.model = AutoModelForSequenceClassification.from_pretrained(
-            str(self.model_path),
+            str(target_path),
             num_labels=len(self.id2label),
         )
         self.model.to(self.device)
         self.model.eval()
-        logger.info(f"MuRIL model loaded successfully on device: {self.device}")
+        self.model_path = target_path
+        logger.info(f"MuRIL model loaded successfully on device: {self.device} (path: {target_path})")
+
+    def reload_active_model(self, new_model_path: Optional[str] = None):
+        """Hot-reloads the newly activated model version into memory safely."""
+        path = Path(new_model_path) if new_model_path else self._resolve_active_model_path()
+        logger.info(f"Hot-reloading active MuRIL model from {path}...")
+        self.load_model(path)
+
 
     def verify_pair(self, claim: str, evidence: str) -> Dict[str, Any]:
         """
-        Verifies a single (claim, evidence) pair.
-        Returns predicted label, confidence, and full probability distribution.
+        Verifies a single (claim, evidence) pair across English, Tamil, Hindi, and Marathi.
+        Returns predicted label, confidence, full probability distribution, and language metadata.
         """
         if self.model is None or self.tokenizer is None:
             raise RuntimeError("ClaimVerifier model not loaded. Call load_model() first.")
 
+        claim_clean = unicodedata.normalize("NFC", str(claim).strip())
+        evidence_clean = unicodedata.normalize("NFC", str(evidence).strip())
+
+        # Detect language
+        from app.utils.language_detector import LanguageDetector
+        lang_res = LanguageDetector.detect_language(claim_clean)
+        detected_lang = lang_res["language"]
+        lang_conf = lang_res["confidence"]
+
         # Sequence pair tokenization: [CLS] claim [SEP] evidence [SEP]
         inputs = self.tokenizer(
-            claim,
-            evidence,
+            claim_clean,
+            evidence_clean,
             truncation=True,
             max_length=self.max_length,
             padding=True,
@@ -121,4 +155,8 @@ class ClaimVerifier:
             "confidence": round(confidence, 4),
             "supports_prob": round(supports_prob, 4),
             "refutes_prob": round(refutes_prob, 4),
+            "language": detected_lang,
+            "language_confidence": lang_conf,
+            "model_path": str(self.model_path.name)
         }
+
